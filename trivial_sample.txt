@@ -1,0 +1,6 @@
+9r 8r 7r 6r 5r 4r
+p p p 3r 2r 1r
+9t 8t 7t 6t 5t 4t
+p p p 3t 2t 1t
+9b 8b 7b 6b 5b 4b
+s t w 3b 2b 1b
