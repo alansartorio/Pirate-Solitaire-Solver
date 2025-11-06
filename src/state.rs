@@ -16,10 +16,6 @@ impl CardNumber {
     pub fn next_inplace(&mut self) {
         self.0 += 1;
     }
-
-    pub fn try_prev(&self) -> Option<Self> {
-        Some(Self(self.0.checked_sub(1)?))
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialOrd, Ord, Hash, PartialEq, Eq)]

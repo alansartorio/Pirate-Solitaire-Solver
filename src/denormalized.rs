@@ -4,11 +4,6 @@ pub struct DenormalizationInformation {
     initial_stacks: Vec<CardStack>,
 }
 
-pub struct DisplayState {
-    state: State,
-    denormalization_information: DenormalizationInformation,
-}
-
 #[derive(Debug, Clone, PartialOrd, Ord, Hash, PartialEq, Eq)]
 pub struct PlaceHolders {
     pub holes: Vec<PlaceHolder>,

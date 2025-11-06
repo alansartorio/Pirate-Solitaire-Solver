@@ -1,4 +1,4 @@
-use std::fmt::{Display, Pointer, Write};
+use std::fmt::{Display, Write};
 
 pub enum AnsiSequence {
     Color(Color),

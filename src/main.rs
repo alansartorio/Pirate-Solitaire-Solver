@@ -1,7 +1,7 @@
 use clap::Parser;
 use std::{
     fs::File,
-    io::{BufRead, BufReader, stdin},
+    io::{BufRead, BufReader},
     path::PathBuf,
 };
 

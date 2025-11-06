@@ -1,11 +1,9 @@
 use std::fmt::Display;
 
-use itertools::Itertools;
-
 use crate::{
     ansi,
     denormalized::DenormalizedState,
-    state::{Beast, Card, CardColor, CardOrBundle, NormalCard, State},
+    state::{Beast, Card, CardColor, CardOrBundle, NormalCard},
 };
 
 fn u8_to_digit(num: u8) -> char {

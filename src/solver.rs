@@ -20,9 +20,9 @@ pub fn solve(start: &State) -> Option<Vec<State>> {
         |state: &State| {
             state
                 .get_next_states()
-                .inspect(|state| {
-                    //dbg!(state);
-                })
+                //.inspect(|state| {
+                //dbg!(state);
+                //})
                 .map(|state| (state, 1))
                 .collect::<Vec<_>>()
         },
