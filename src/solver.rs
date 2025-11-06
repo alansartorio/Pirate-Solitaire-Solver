@@ -21,7 +21,7 @@ pub fn solve(start: &State) -> Option<Vec<State>> {
             state
                 .get_next_states()
                 .map(|state| {
-                    println!("{state}");
+                    //println!("{state}");
                     state
                 })
                 .map(|state| (state, 1))

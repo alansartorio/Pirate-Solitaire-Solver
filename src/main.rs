@@ -1,21 +1,27 @@
-use std::io::{BufRead, stdin};
+use std::{
+    fs::read,
+    io::{BufRead, stdin},
+};
 
 use anyhow::{Context, anyhow};
 
 use crate::{
+    deck_generator::generate_game,
     solver::solve,
     state::{CardStack, Output, PlaceHolders, State},
 };
 
 mod actions;
+mod collection;
+mod deck_generator;
+mod godot_shuffle;
 mod parser;
 mod printer;
 mod solver;
 mod state;
 mod validators;
-mod collection;
 
-fn main() -> anyhow::Result<()> {
+fn read_from_stdin() -> anyhow::Result<State> {
     let stdin = stdin().lock();
 
     let initial_stacks: [CardStack; 6] = stdin
@@ -37,15 +43,26 @@ fn main() -> anyhow::Result<()> {
         board: initial_stacks.into(),
     };
 
-    //dbg!(&state);
+    Ok(state)
+}
+
+fn read_from_seed_stdin() -> anyhow::Result<State> {
+    let mut stdin = stdin().lock();
+    let mut line = String::new();
+    stdin.read_line(&mut line)?;
+    let seed = line.trim().parse()?;
+
+    let state = generate_game(seed);
+
+    Ok(state)
+}
+
+fn main() -> anyhow::Result<()> {
+    let state = read_from_seed_stdin()?;
+    //let state = read_from_stdin()?;
     println!("{state}");
 
     state.is_valid().context("validation error")?;
-
-    //dbg!(state.get_next_states().collect::<Vec<_>>().len());
-    //for state in state.get_next_states() {
-    //println!("{state}");
-    //}
 
     if let Some(solution) = solve(&state) {
         for (i, step) in solution.into_iter().enumerate() {
