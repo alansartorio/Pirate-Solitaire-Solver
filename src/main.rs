@@ -49,23 +49,12 @@ fn read_from(read: impl BufRead) -> anyhow::Result<DenormalizedState> {
     Ok(state)
 }
 
-fn read_from_seed_stdin() -> anyhow::Result<DenormalizedState> {
-    let mut stdin = stdin().lock();
-    let mut line = String::new();
-    stdin.read_line(&mut line)?;
-    let seed = line.trim().parse()?;
-
-    let state = generate_game(seed);
-
-    Ok(state)
-}
-
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 enum Args {
-    #[command(name = "seed")]
+    #[command(name = "seed", about = "load scramble from seed")]
     Seed { seed: String },
-    #[command(name = "cards")]
+    #[command(name = "cards", about = "load scramble from card disposition")]
     Cards { file: PathBuf },
 }
 
