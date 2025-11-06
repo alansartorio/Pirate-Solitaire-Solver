@@ -22,6 +22,7 @@ mod printer;
 mod solver;
 mod state;
 mod validators;
+mod ansi;
 
 fn read_from_stdin() -> anyhow::Result<DenormalizedState> {
     let stdin = stdin().lock();
