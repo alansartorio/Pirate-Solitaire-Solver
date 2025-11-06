@@ -2,7 +2,10 @@ use std::fmt::Display;
 
 use itertools::Itertools;
 
-use crate::state::{Beast, Card, CardColor, CardOrBundle, NormalCard, State};
+use crate::{
+    denormalized::DenormalizedState,
+    state::{Beast, Card, CardColor, CardOrBundle, NormalCard, State},
+};
 
 fn u8_to_digit(num: u8) -> char {
     num.to_string().chars().into_iter().next().unwrap()
@@ -32,7 +35,7 @@ impl Card {
     }
 }
 
-impl Display for State {
+impl Display for DenormalizedState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let max_stack_height = self
             .board
@@ -46,7 +49,7 @@ impl Display for State {
         let separation = 2;
 
         let mut table =
-            vec![vec![' '; (card_width + 1) * 6 + 1]; max_stack_height * 2 + separation + 1];
+            vec![vec![' '; (card_width + 1) * 6 + 1]; max_stack_height * 2 + separation + 1 + 1];
 
         for (x, placeholder) in self.placeholders.holes.iter().enumerate() {
             if let Some(card) = placeholder.0 {
@@ -62,12 +65,12 @@ impl Display for State {
         for (x, stack) in self.board.iter().enumerate() {
             for (y, card) in stack.cards.iter().enumerate() {
                 let start = x * (card_width + 1) + 1;
-                let y = y * 2 + separation + 1;
+                let y = y * 2 + separation + 1 + 1;
                 table[y][start..start + 2].copy_from_slice(&card.as_chars());
             }
         }
 
-        let colors = [CardColor::Blue, CardColor::Teal, CardColor::Red];
+        let colors = [CardColor::Blue, CardColor::Red, CardColor::Teal];
         for (x, (color, highest_number)) in colors
             .into_iter()
             .map(|color| (color, self.output[&color]))

@@ -43,6 +43,12 @@ where
             .flat_map(|(value, count)| std::iter::repeat_n(value, *count))
     }
 
+    pub fn into_iter(self) -> impl Iterator<Item = T> {
+        self.map
+            .into_iter()
+            .flat_map(|(value, count)| std::iter::repeat_n(value, count))
+    }
+
     pub fn take(&mut self, value: &T) -> Option<T> {
         match self.map.entry(value.clone()) {
             Entry::Vacant(_) => None,

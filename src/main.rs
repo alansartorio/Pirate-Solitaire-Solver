@@ -7,6 +7,7 @@ use anyhow::{Context, anyhow};
 
 use crate::{
     deck_generator::generate_game,
+    denormalized::DenormalizedState,
     solver::solve,
     state::{CardStack, Output, PlaceHolders, State},
 };
@@ -14,6 +15,7 @@ use crate::{
 mod actions;
 mod collection;
 mod deck_generator;
+mod denormalized;
 mod godot_shuffle;
 mod parser;
 mod printer;
@@ -21,7 +23,7 @@ mod solver;
 mod state;
 mod validators;
 
-fn read_from_stdin() -> anyhow::Result<State> {
+fn read_from_stdin() -> anyhow::Result<DenormalizedState> {
     let stdin = stdin().lock();
 
     let initial_stacks: [CardStack; 6] = stdin
@@ -37,8 +39,8 @@ fn read_from_stdin() -> anyhow::Result<State> {
         .try_into()
         .map_err(|_| anyhow!("not enough card stacks"))?;
 
-    let state = State {
-        placeholders: PlaceHolders::default(),
+    let state = DenormalizedState {
+        placeholders: Default::default(),
         output: Output::default(),
         board: initial_stacks.into(),
     };
@@ -46,7 +48,7 @@ fn read_from_stdin() -> anyhow::Result<State> {
     Ok(state)
 }
 
-fn read_from_seed_stdin() -> anyhow::Result<State> {
+fn read_from_seed_stdin() -> anyhow::Result<DenormalizedState> {
     let mut stdin = stdin().lock();
     let mut line = String::new();
     stdin.read_line(&mut line)?;
@@ -62,12 +64,19 @@ fn main() -> anyhow::Result<()> {
     //let state = read_from_stdin()?;
     println!("{state}");
 
+    let (state, denormalization_information) = state.normalize();
+
+    //dbg!(&state);
+
     state.is_valid().context("validation error")?;
 
     if let Some(solution) = solve(&state) {
         for (i, step) in solution.into_iter().enumerate() {
-            println!("step {i}:");
-            println!("{step}");
+            println!();
+            println!("==============");
+            println!();
+            println!("STEP {i}:");
+            println!("{}", step.denormalize(&denormalization_information));
         }
     } else {
         println!("no solution");

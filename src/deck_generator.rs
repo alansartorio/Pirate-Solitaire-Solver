@@ -4,7 +4,8 @@ use itertools::Itertools;
 
 use crate::{
     godot_shuffle::{self, Seed},
-    state::{Beast, Card, CardColor, CardNumber, CardStack, NormalCard, State},
+    denormalized::DenormalizedState,
+    state::{Beast, Card, CardColor, CardNumber, CardStack, NormalCard},
 };
 
 fn new_deck() -> Vec<Card> {
@@ -28,7 +29,7 @@ fn new_deck() -> Vec<Card> {
     deck
 }
 
-fn distribute(deck: Vec<Card>) -> State {
+fn distribute(deck: Vec<Card>) -> DenormalizedState {
     let mut deck = VecDeque::from(deck);
     let mut stacks: [CardStack; 6] = array::repeat(CardStack { cards: vec![] });
     let mut stack_index_iterator = (0..stacks.len()).cycle();
@@ -38,14 +39,14 @@ fn distribute(deck: Vec<Card>) -> State {
         stack.cards.push(card);
     }
 
-    State {
+    DenormalizedState {
         board: stacks.into(),
         output: Default::default(),
         placeholders: Default::default(),
     }
 }
 
-pub fn generate_game(seed: Seed) -> State {
+pub fn generate_game(seed: Seed) -> DenormalizedState {
     let mut deck = new_deck();
     godot_shuffle::shuffle(&mut deck, seed);
     distribute(deck)
