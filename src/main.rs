@@ -1,6 +1,8 @@
+use clap::Parser;
 use std::{
-    fs::read,
-    io::{BufRead, stdin},
+    fs::File,
+    io::{BufRead, BufReader, stdin},
+    path::PathBuf,
 };
 
 use anyhow::{Context, anyhow};
@@ -9,10 +11,11 @@ use crate::{
     deck_generator::generate_game,
     denormalized::DenormalizedState,
     solver::solve,
-    state::{CardStack, Output, PlaceHolders, State},
+    state::{CardStack, Output},
 };
 
 mod actions;
+mod ansi;
 mod collection;
 mod deck_generator;
 mod denormalized;
@@ -22,12 +25,9 @@ mod printer;
 mod solver;
 mod state;
 mod validators;
-mod ansi;
 
-fn read_from_stdin() -> anyhow::Result<DenormalizedState> {
-    let stdin = stdin().lock();
-
-    let initial_stacks: [CardStack; 6] = stdin
+fn read_from(read: impl BufRead) -> anyhow::Result<DenormalizedState> {
+    let initial_stacks: [CardStack; 6] = read
         .lines()
         .map(|line| {
             line.map_err(|read_error| anyhow!("line read error: {read_error}"))?
@@ -60,14 +60,24 @@ fn read_from_seed_stdin() -> anyhow::Result<DenormalizedState> {
     Ok(state)
 }
 
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+enum Args {
+    #[command(name = "seed")]
+    Seed { seed: String },
+    #[command(name = "cards")]
+    Cards { file: PathBuf },
+}
+
 fn main() -> anyhow::Result<()> {
-    let state = read_from_seed_stdin()?;
-    //let state = read_from_stdin()?;
+    let args = Args::parse();
+    let state = match args {
+        Args::Seed { seed } => generate_game(seed.parse()?),
+        Args::Cards { file } => read_from(BufReader::new(File::open(file)?))?,
+    };
     println!("{state}");
 
     let (state, denormalization_information) = state.normalize();
-
-    //dbg!(&state);
 
     state.is_valid().context("validation error")?;
 
